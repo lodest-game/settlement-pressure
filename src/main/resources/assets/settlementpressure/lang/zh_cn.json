@@ -1,0 +1,4 @@
+{
+  "settlementpressure.msg.base_formed": "基地建设的动静惊动了附近的怪物……它们将在 %s 天后逼近基地。",
+  "settlementpressure.msg.base_abandoned": "这座基地已被废弃，怪物们失去了目标，渐渐散去。"
+}

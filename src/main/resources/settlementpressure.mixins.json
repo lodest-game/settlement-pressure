@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "package": "com.settlementpressure.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "NaturalSpawnerMixin",
+    "LevelMixin"
+  ],
+  "client": [],
+  "server": [],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
