@@ -20,7 +20,8 @@
 - **开局安全保护期**：新建基地 / 废弃后重新启用的基地，默认 3 天不刷怪，方便修缮。
 - **活动驱动衰减**：只要有玩家在基地内活动（走动/用箱子/种田/交互）就永不衰减；长期无人活动才逐渐废弃。
 - **重启用继承规模**：废弃基地被玩家重新启用时，直接继承原有规模，怪物强度跟随原规模。
-- **可翻译提示**：建基/废弃时有聊天提示，语言文件支持中文 / 英文，可自行扩展。
+- **合并 / 分割感知**：相邻基地会合并为更大的定居点（危险提升）；被拆开的定居点会各自继承成基时间。
+- **可翻译提示**：建基/废弃/合并/分割时有聊天提示，语言文件支持中文 / 英文，可自行扩展。
 
 ---
 
@@ -30,13 +31,15 @@
 |---|---|
 | **结构分** | 玩家放置方块时，按 6 个相邻面里「玩家方块」的数量给分（孤立 0.2 / 1邻 1.0 / 2邻 2.0 / 3邻+ 3.0），并重算周围方块 |
 | **基地判定** | 某区块 3×3 邻域（含对角 9 区块）结构分总和 ≥ 阈值（默认 20）且 ≥2 个有分区块 → 判定为基地；8 邻接洪泛合并/扩张 |
-| **激活制** | 基地只有在「基地区块内有在线玩家」时才激活，威胁才生效 |
-| **区域** | 安全区(基地) → 过渡区 `bufferDistance` → 危险区 `dangerDistance` → 野外 |
+| **激活制** | 基地只有在「基地区块内有在线玩家」时才激活，危险区才刷怪 |
+| **区域** | 安全区(基地+缓冲) → 危险区 `bufferDistance`~`dangerDistance` → 野外 |
+| **威胁** | `T = (结构分 + 有分区块数 × activeWeight) × 难度倍率` |
 | **危险区动态上限** | `dangerSpawnMin + (dangerSpawnMax - dangerSpawnMin) × T/(T + threatBase)` |
-| **威胁** | `T = 基地规模评分 B × 难度倍率 H`（B = 结构分 + 有分区块数 × activeWeight） |
-| **野外规则** | 每玩家 `wanderSpawnMin` ~ `wanderSpawnMax`（默认 1~3），保护半径 `wanderProtectionRadius` |
+| **野外规则** | 每玩家 `wanderSpawnMin` ~ `wanderSpawnMax`（默认 1~3），统计半径 `wanderProtectionRadius` |
 | **衰减/废弃** | 无玩家活动时结构分按半衰期 `halfLifeGameDays` 衰减；方块永不删除（规模保留），重新启用即恢复 |
-| **保护期** | 新建/重启用基地 `newbieProtectionDays` 天内危险区关闭 |
+| **保护期** | 新建/重启用基地 `newbieProtectionDays` 天内危险区关闭（默认 3 天） |
+
+> **关于保护期计时**：采用单调递增的「游戏日计数器」。`/time add`、睡觉跳过夜晚都会计入；而 `/time set` 把时间往回拨**不会**重置保护期（只前进、不倒退）。
 
 ---
 
@@ -50,10 +53,10 @@
 | `baseDetection` | `structureThreshold=20` `minScoredChunks=2` | 成基地阈值；**必须跨 ≥2 区块** |
 | `decay` | `halfLifeGameDays=7` | 无人活动时结构分半衰期 |
 | `regions` | `bufferDistance=2` `dangerDistance=2` | 过渡区 / 危险区范围（单位区块，1 区块=16 格） |
-| `threat` | `activeWeight=0.5` `difficulty*` | 威胁计算与各难度倍率 |
+| `threat` | `activeWeight=0.5` `difficultyPeaceful=0` `difficultyEasy=0.6` `difficultyNormal=1.0` `difficultyHard=1.3` | 威胁计算与各难度倍率 |
 | `spawning` | `threatBase=2000` `dangerSpawnMin=3` `dangerSpawnMax=50` | 危险区动态总量上限曲线 |
-| `loneWolf` | `wanderSpawnMin=1` `wanderSpawnMax=3` `wanderProtectionRadius=8` `newbieProtectionDays=3` | 野外每玩家怪数上下限 / 保护半径 / 开局保护期 |
-| `performance` | `activationCheckInterval` `decayRecomputeInterval` `baseRebuildInterval` `debugLogging` | 性能节流与调试 |
+| `loneWolf` | `wanderSpawnMin=1` `wanderSpawnMax=3` `wanderProtectionRadius=8` `newbieProtectionDays=3` | 野外每玩家怪数上下限 / 统计半径 / 开局保护期 |
+| `performance` | `activationCheckInterval=20` `decayRecomputeInterval=200` `baseRebuildInterval=20` | 性能节流（单位游戏 tick） |
 
 **调难度**：想让危险区更难 → 调大 `dangerSpawnMax`、调小 `threatBase`；想更安全 → 反之。想控制野外怪数 → 调 `wanderSpawnMin/Max`。
 
@@ -104,7 +107,7 @@ gradlew.bat build
 ./gradlew build
 ```
 
-产物：`build/libs/settlementpressure-1.0.0.jar`。
+产物：`build/libs/settlementpressure-1.1.0.jar`。
 
 > ⚠️ **路径必须纯 ASCII（不能含中文）**：NeoGradle 在 `neoFormRecompile` 阶段按系统默认编码解析 `@argfile`，
 > 中文路径会导致 worker 找不到 `GradleWorkerMain`。请把项目 / Gradle 发行版 / `GRADLE_USER_HOME` 都放在英文路径下构建。
@@ -143,4 +146,6 @@ settlement-pressure/
 
 ## 八、许可
 
-MIT。设计文档版权归原作者。
+- 作者：**lodest-game**
+- 仓库：<https://github.com/lodest-game/settlement-pressure>
+- 许可证：**MIT**（见 `LICENSE`）。

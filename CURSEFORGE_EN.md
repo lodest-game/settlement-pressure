@@ -16,11 +16,12 @@ A server-side threat mod where a base is not defined by block type, but by **wha
 - 📈 **Dynamic spawn cap** — the danger zone around a base holds a *total* mob cap that scales with your base's size. A small hut draws ~3 mobs; a huge base approaches the configurable max (default 50). Fills to the cap, then **stops** — no runaway spawning.
 - 🛡️ **Three-zone system** — Safe zone (your base) → Buffer zone (no spawns) → Danger zone (mobs spawn here).
 - 🌲 **Lone-wolf rule** — players outside any base face **1–3 hostile mobs each**. Two players together = 6. Everyone else stays sparse.
-- 🕐 **Grace period** — newly built (or re-activated) bases are safe for a configurable number of in-game days so you can settle in.
+- 🕐 **Grace period** — newly built (or re-activated) bases are safe for a configurable number of in-game days so you can settle in. The timer only moves forward: `/time add` and sleeping count toward it, while `/time set` backwards never resets it.
 - ⏳ **Activity-based decay** — as long as any player is active inside a base, it never decays. Leave it abandoned, and it slowly fades — but keeps its size, and re-activating it restores everything.
+- 🔗 **Merge & split aware** — adjacent bases merge into one larger settlement (more danger); when a settlement is cut apart, every part inherits its formation age.
 - 🌍 **Overworld only** — the Nether and End are completely untouched, so you can still gather resources normally.
 - 🔧 **Fully configurable** — every threshold, cap, radius and curve, with bilingual (EN/中文) in-file comments.
-- 💬 **Translatable messages** — base-built and base-abandoned notifications, with built-in English & Chinese lang files.
+- 💬 **Translatable messages** — base built / abandoned / merged / split notifications, with built-in English & Chinese lang files.
 
 ## How it works
 
