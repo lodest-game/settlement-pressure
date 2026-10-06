@@ -1,6 +1,0 @@
-{
-  "settlementpressure.msg.base_formed": "The noise of your construction stirs the monsters nearby... They will approach the base in %s day(s).",
-  "settlementpressure.msg.base_abandoned": "This base has been abandoned; the monsters lose interest and drift away.",
-  "settlementpressure.msg.base_merged": "Two bases have merged into a larger settlement — and the danger grows with it.",
-  "settlementpressure.msg.base_split": "The settlement has been split apart; the monsters lose their former target."
-}

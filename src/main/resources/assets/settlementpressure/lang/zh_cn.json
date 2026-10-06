@@ -1,6 +1,0 @@
-{
-  "settlementpressure.msg.base_formed": "基地建设的动静惊动了附近的怪物……它们将在 %s 天后逼近基地。",
-  "settlementpressure.msg.base_abandoned": "这座基地已被废弃，怪物们失去了目标，渐渐散去。",
-  "settlementpressure.msg.base_merged": "两座基地已完成对接，合为更大的定居点，危险也随之提升。",
-  "settlementpressure.msg.base_split": "定居点被分割开来，怪物们失去了原有的目标。"
-}
