@@ -19,6 +19,9 @@ A server-side threat mod where a base is not defined by block type, but by **wha
 - 🕐 **Grace period** — newly built (or re-activated) bases are safe for a configurable number of in-game days so you can settle in. The timer only moves forward: `/time add` and sleeping count toward it, while `/time set` backwards never resets it.
 - ⏳ **Activity-based decay** — as long as any player is active inside a base, it never decays. Leave it abandoned, and it slowly fades — but keeps its size, and re-activating it restores everything.
 - 🔗 **Merge & split aware** — adjacent bases merge into one larger settlement (more danger); when a settlement is cut apart, every part inherits its formation age.
+- 🧩 **Multiblock / dynamic structure compatible** — Create contraptions keep their threat, Valkyrien Skies / Aeronautics ships are treated as removed, Immersive Engineering multiblocks keep their threat — with no hard dependency on those mods.
+- 🤖 **Automated builder aware** — blocks placed by Create's deployer / schematicannon, MineColonies citizens, etc. count toward bases and threat.
+- 🍃 **Natural blocks excluded** — falling sand/gravel/concrete powder, snow layers, mushroom spread and fluids/fire are never mistaken for player builds.
 - 🌍 **Overworld only** — the Nether and End are completely untouched, so you can still gather resources normally.
 - 🔧 **Fully configurable** — every threshold, cap, radius and curve, with bilingual (EN/中文) in-file comments.
 - 💬 **Translatable messages** — base built / abandoned / merged / split notifications, with built-in English & Chinese lang files.

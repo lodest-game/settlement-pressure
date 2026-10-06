@@ -21,6 +21,9 @@
 - **活动驱动衰减**：只要有玩家在基地内活动（走动/用箱子/种田/交互）就永不衰减；长期无人活动才逐渐废弃。
 - **重启用继承规模**：废弃基地被玩家重新启用时，直接继承原有规模，怪物强度跟随原规模。
 - **合并 / 分割感知**：相邻基地会合并为更大的定居点（危险提升）；被拆开的定居点会各自继承成基时间。
+- **多模组多方块兼容**（无需前置、动态兼容）：机械动力动态化结构保留威胁、航空学物理化结构判为拆除、沉浸工程多方块成型保留威胁，其它原地成型/移动类多方块同样兼容。
+- **自动建造兼容**：机械动力机械手/蓝图、MineColonies 市民等自动放置的方块，同样会触发基地判定与威胁计算。
+- **自然方块排除**：坠落中的沙/砾石/混凝土粉末、积雪层、蘑菇扩散、水/岩浆/火不会被误判为「玩家放置」。
 - **可翻译提示**：建基/废弃/合并/分割时有聊天提示，语言文件支持中文 / 英文，可自行扩展。
 
 ---
@@ -41,6 +44,18 @@
 
 > **关于保护期计时**：采用单调递增的「游戏日计数器」。`/time add`、睡觉跳过夜晚都会计入；而 `/time set` 把时间往回拨**不会**重置保护期（只前进、不倒退）。
 
+### 模组兼容（动态，无硬依赖）
+
+方块追踪区分了「玩家放置 / 模组变形 / 模组移动 / 自然产生」四类来源：
+
+| 场景 | 判定 |
+|---|---|
+| 机械动力动态化（装置） | 保留威胁（方块仍属于基地） |
+| 航空学 / Valkyrien Skies 物理化（船体） | 判为拆除（结构离开地面） |
+| 沉浸工程多方块成型 | 保留威胁（原地变形） |
+| 机械动力机械手 / 蓝图、MineColonies 等自动建造 | 计入威胁（自动放置） |
+| 沙/砾石/混凝土粉末坠落、积雪、蘑菇扩散、水/岩浆/火 | 不计入（自然事件） |
+
 ---
 
 ## 三、配置
@@ -56,7 +71,7 @@
 | `threat` | `activeWeight=0.5` `difficultyPeaceful=0` `difficultyEasy=0.6` `difficultyNormal=1.0` `difficultyHard=1.3` | 威胁计算与各难度倍率 |
 | `spawning` | `threatBase=2000` `dangerSpawnMin=3` `dangerSpawnMax=50` | 危险区动态总量上限曲线 |
 | `loneWolf` | `wanderSpawnMin=1` `wanderSpawnMax=3` `wanderProtectionRadius=8` `newbieProtectionDays=3` | 野外每玩家怪数上下限 / 统计半径 / 开局保护期 |
-| `performance` | `activationCheckInterval=20` `decayRecomputeInterval=200` `baseRebuildInterval=20` | 性能节流（单位游戏 tick） |
+| `performance` | `activationCheckInterval=20` `decayRecomputeInterval=200` `baseRebuildInterval=20` `debugLogging=false` | 性能节流（单位游戏 tick）与调试日志开关 |
 
 **调难度**：想让危险区更难 → 调大 `dangerSpawnMax`、调小 `threatBase`；想更安全 → 反之。想控制野外怪数 → 调 `wanderSpawnMin/Max`。
 
@@ -107,7 +122,7 @@ gradlew.bat build
 ./gradlew build
 ```
 
-产物：`build/libs/settlementpressure-1.1.0.jar`。
+产物：`build/libs/settlementpressure-1.2.0.jar`。
 
 > ⚠️ **路径必须纯 ASCII（不能含中文）**：NeoGradle 在 `neoFormRecompile` 阶段按系统默认编码解析 `@argfile`，
 > 中文路径会导致 worker 找不到 `GradleWorkerMain`。请把项目 / Gradle 发行版 / `GRADLE_USER_HOME` 都放在英文路径下构建。
@@ -135,7 +150,7 @@ settlement-pressure/
         ├── base/                            # 基地判定 / 区域 / 威胁 / 保护期
         ├── region/RegionType.java
         ├── spawn/SpawnController.java       # 刷怪控制（增量计数）
-        ├── mixin/                           # NaturalSpawner / Level mixin
+        ├── mixin/                           # NaturalSpawner / Level / LevelChunk mixin
         ├── api/SettlementPressureAPI.java   # 只读公开 API
         ├── command/SPCommand.java           # /settlementpressure 命令
         ├── event/ServerEventHandlers.java   # 事件接线
